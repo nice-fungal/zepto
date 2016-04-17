@@ -1,19 +1,24 @@
 {
-    "name": "zepto"
-  , "version": "1.2.0"
-  , "main": "dist/zepto.js"
-  , "homepage": "http://zeptojs.com"
-  , "scripts": {
-      "test": "coffee make test"
-    , "dist": "coffee make dist"
-    , "start": "coffee test/server.coffee"
-  }
-  , "repository": "madrobby/zepto"
-  , "license": "MIT"
-  , "devDependencies": {
-      "uglify-js": "2.4.x"
-    , "express": "3.1.x"
-    , "coffee-script": "1.5.x"
-    , "shelljs": "0.1.x"
+  "name": "zepto",
+  "version": "1.2.0",
+  "homepage": "http://zeptojs.com",
+  "scripts": {
+    "test": "coffee make test",
+    "dist": "coffee make dist",
+    "start": "coffee test/server.coffee",
+    "build": "gulp clean && gulp build"
+  },
+  "repository": "madrobby/zepto",
+  "license": "MIT",
+  "devDependencies": {
+    "coffee-script": "1.5.x",
+    "del": "2.2.2",
+    "express": "3.1.x",
+    "gulp": "3.9.1",
+    "gulp-rename": "1.2.2",
+    "gulp-rev": "7.1.2",
+    "gulp-shell": "0.5.2",
+    "shelljs": "0.1.x",
+    "uglify-js": "2.4.x"
   }
 }

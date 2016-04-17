@@ -1,10 +1,11 @@
 #!/usr/bin/env coffee
 require 'shelljs/make'
 fs = require 'fs'
+pkg = require './package.json'
 
 zepto_js  = 'dist/zepto.js'
 zepto_min = 'dist/zepto.min.js'
-zepto_gz  = 'dist/zepto.min.gz'
+# zepto_gz  = 'dist/zepto.min.gz'
 
 port = 3999
 root = __dirname + '/'
@@ -27,23 +28,22 @@ target[zepto_js] = ->
 target[zepto_min] = ->
   target.minify() if stale(zepto_min, zepto_js)
 
-target[zepto_gz] = ->
-  target.compress() if stale(zepto_gz, zepto_min)
+# target[zepto_gz] = ->
+#   target.compress() if stale(zepto_gz, zepto_min)
 
 target.dist = ->
   target.build()
   target.minify()
-  target.compress()
+  # target.compress()
 
 target.build = ->
   cd __dirname
   mkdir '-p', 'dist'
   modules = (env['MODULES'] || 'zepto event ajax form ie').split(' ')
   module_files = ( "src/#{module}.js" for module in modules )
-  intro = "/* Zepto #{describe_version()} - #{modules.join(' ')} - zeptojs.com/license */\n"
-  dist = cat(module_files).replace(/^\/[\/*].*$/mg, '').replace(/\n{3,}/g, "\n\n")
-  dist = cat('src/amd_layout.js').replace(/YIELD/, -> dist.trim()) unless env['NOAMD']
-  (intro + dist).to(zepto_js)
+  intro = "/* Zepto #{pkg.version} - #{modules.join(' ')} - zeptojs.com/license */\n"
+  dist = (intro + cat(module_files).replace(/^\/[\/*].*$/mg, '')).replace(/\n{3,}/g, "\n\n")
+  dist.to(zepto_js)
   report_size(zepto_js)
 
 target.minify = ->
@@ -53,15 +53,15 @@ target.minify = ->
   (intro + minify(zepto_code)).to(zepto_min)
   report_size(zepto_min)
 
-target.compress = ->
-  gzip = require('zlib').createGzip()
-  inp = fs.createReadStream(zepto_min)
-  out = fs.createWriteStream(zepto_gz)
-  inp.pipe(gzip).pipe(out)
-  out.on 'close', ->
-    report_size(zepto_gz)
-    factor = fsize(zepto_js) / fsize(zepto_gz)
-    echo "compression factor: #{format_number(factor)}"
+# target.compress = ->
+#   gzip = require('zlib').createGzip()
+#   inp = fs.createReadStream(zepto_min)
+#   out = fs.createWriteStream(zepto_gz)
+#   inp.pipe(gzip).pipe(out)
+#   out.on 'close', ->
+#     report_size(zepto_gz)
+#     factor = fsize(zepto_js) / fsize(zepto_gz)
+#     echo "compression factor: #{format_number(factor)}"
 
 target.publish = ->
   tag = 'v' + package_version()
