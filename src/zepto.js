@@ -120,11 +120,11 @@ var Zepto = (function() {
     return elementDisplay[nodeName]
   }
 
-  function children(element) {
-    return 'children' in element ?
-      slice.call(element.children) :
-      $.map(element.childNodes, function(node){ if (node.nodeType == 1) return node })
-  }
+  // function children(element) {
+  //   return 'children' in element ?
+  //     slice.call(element.children) :
+  //     $.map(element.childNodes, function(node){ if (node.nodeType == 1) return node })
+  // }
 
   function Z(dom, selector) {
     var i, len = dom ? dom.length : 0
@@ -323,7 +323,7 @@ var Zepto = (function() {
         ( value == "false" ? false :
           value == "null" ? null :
           +value + "" == value ? +value :
-          /^[\[\{]/.test(value) ? $.parseJSON(value) :
+          /^[\[\{]/.test(value) ? JSON.parse(value) :
           value )
         : value
     } catch(e) {
@@ -393,11 +393,11 @@ var Zepto = (function() {
     return elements
   }
 
-  $.grep = function(elements, callback){
-    return filter.call(elements, callback)
-  }
+  // $.grep = function(elements, callback){
+  //   return filter.call(elements, callback)
+  // }
 
-  if (window.JSON) $.parseJSON = JSON.parse
+  // if (window.JSON) $.parseJSON = JSON.parse
 
   // Populate the class2type map
   $.each("Boolean Number String Function Array Date RegExp Object Error".split(" "), function(i, name) {
@@ -427,14 +427,14 @@ var Zepto = (function() {
       return concat.apply(zepto.isZ(this) ? this.toArray() : this, args)
     },
 
-    // `map` and `slice` in the jQuery API work differently
-    // from their array counterparts
-    map: function(fn){
-      return $($.map(this, function(el, i){ return fn.call(el, i, el) }))
-    },
-    slice: function(){
-      return $(slice.apply(this, arguments))
-    },
+    // // `map` and `slice` in the jQuery API work differently
+    // // from their array counterparts
+    // map: function(fn){
+    //   return $($.map(this, function(el, i){ return fn.call(el, i, el) }))
+    // },
+    // slice: function(){
+    //   return $(slice.apply(this, arguments))
+    // },
 
     ready: function(callback){
       // need to check if document.body exists for IE as that browser reports
@@ -446,10 +446,10 @@ var Zepto = (function() {
     get: function(idx){
       return idx === undefined ? slice.call(this) : this[idx >= 0 ? idx : idx + this.length]
     },
-    toArray: function(){ return this.get() },
-    size: function(){
-      return this.length
-    },
+    // toArray: function(){ return this.get() },
+    // size: function(){
+    //   return this.length
+    // },
     remove: function(){
       return this.each(function(){
         if (this.parentNode != null)
@@ -468,9 +468,9 @@ var Zepto = (function() {
         return zepto.matches(element, selector)
       }))
     },
-    add: function(selector,context){
-      return $(uniq(this.concat($(selector,context))))
-    },
+    // add: function(selector,context){
+    //   return $(uniq(this.concat($(selector,context))))
+    // },
     is: function(selector){
       return this.length > 0 && zepto.matches(this[0], selector)
     },
@@ -489,24 +489,24 @@ var Zepto = (function() {
       }
       return $(nodes)
     },
-    has: function(selector){
-      return this.filter(function(){
-        return isObject(selector) ?
-          $.contains(this, selector) :
-          $(this).find(selector).size()
-      })
-    },
-    eq: function(idx){
-      return idx === -1 ? this.slice(idx) : this.slice(idx, + idx + 1)
-    },
+    // has: function(selector){
+    //   return this.filter(function(){
+    //     return isObject(selector) ?
+    //       $.contains(this, selector) :
+    //       $(this).find(selector).size()
+    //   })
+    // },
+    // eq: function(idx){
+    //   return idx === -1 ? this.slice(idx) : this.slice(idx, + idx + 1)
+    // },
     first: function(){
       var el = this[0]
       return el && !isObject(el) ? el : $(el)
     },
-    last: function(){
-      var el = this[this.length - 1]
-      return el && !isObject(el) ? el : $(el)
-    },
+    // last: function(){
+    //   var el = this[this.length - 1]
+    //   return el && !isObject(el) ? el : $(el)
+    // },
     find: function(selector){
       var result, $this = this
       if (!selector) result = $()
@@ -518,7 +518,7 @@ var Zepto = (function() {
           })
         })
       else if (this.length == 1) result = $(zepto.qsa(this[0], selector))
-      else result = this.map(function(){ return zepto.qsa(this, selector) })
+      else result = $($.map(this, function(){ return zepto.qsa(this, selector) }))
       return result
     },
     closest: function(selector, context){
@@ -544,17 +544,17 @@ var Zepto = (function() {
     parent: function(selector){
       return filtered(uniq(this.pluck('parentNode')), selector)
     },
-    children: function(selector){
-      return filtered(this.map(function(){ return children(this) }), selector)
-    },
-    contents: function() {
-      return this.map(function() { return this.contentDocument || slice.call(this.childNodes) })
-    },
-    siblings: function(selector){
-      return filtered(this.map(function(i, el){
-        return filter.call(children(el.parentNode), function(child){ return child!==el })
-      }), selector)
-    },
+    // children: function(selector){
+    //   return filtered(this.map(function(){ return children(this) }), selector)
+    // },
+    // contents: function() {
+    //   return this.map(function() { return this.contentDocument || slice.call(this.childNodes) })
+    // },
+    // siblings: function(selector){
+    //   return filtered(this.map(function(i, el){
+    //     return filter.call(children(el.parentNode), function(child){ return child!==el })
+    //   }), selector)
+    // },
     empty: function(){
       return this.each(function(){ this.innerHTML = '' })
     },
@@ -572,43 +572,43 @@ var Zepto = (function() {
     replaceWith: function(newContent){
       return this.before(newContent).remove()
     },
-    wrap: function(structure){
-      var func = isFunction(structure)
-      if (this[0] && !func)
-        var dom   = $(structure).get(0),
-            clone = dom.parentNode || this.length > 1
+    // wrap: function(structure){
+    //   var func = isFunction(structure)
+    //   if (this[0] && !func)
+    //     var dom   = $(structure).get(0),
+    //         clone = dom.parentNode || this.length > 1
 
-      return this.each(function(index){
-        $(this).wrapAll(
-          func ? structure.call(this, index) :
-            clone ? dom.cloneNode(true) : dom
-        )
-      })
-    },
-    wrapAll: function(structure){
-      if (this[0]) {
-        $(this[0]).before(structure = $(structure))
-        var children
-        // drill down to the inmost element
-        while ((children = structure.children()).length) structure = children.first()
-        $(structure).append(this)
-      }
-      return this
-    },
-    wrapInner: function(structure){
-      var func = isFunction(structure)
-      return this.each(function(index){
-        var self = $(this), contents = self.contents(),
-            dom  = func ? structure.call(this, index) : structure
-        contents.length ? contents.wrapAll(dom) : self.append(dom)
-      })
-    },
-    unwrap: function(){
-      this.parent().each(function(){
-        $(this).replaceWith($(this).children())
-      })
-      return this
-    },
+    //   return this.each(function(index){
+    //     $(this).wrapAll(
+    //       func ? structure.call(this, index) :
+    //         clone ? dom.cloneNode(true) : dom
+    //     )
+    //   })
+    // },
+    // wrapAll: function(structure){
+    //   if (this[0]) {
+    //     $(this[0]).before(structure = $(structure))
+    //     var children
+    //     // drill down to the inmost element
+    //     while ((children = structure.children()).length) structure = children.first()
+    //     $(structure).append(this)
+    //   }
+    //   return this
+    // },
+    // wrapInner: function(structure){
+    //   var func = isFunction(structure)
+    //   return this.each(function(index){
+    //     var self = $(this), contents = self.contents(),
+    //         dom  = func ? structure.call(this, index) : structure
+    //     contents.length ? contents.wrapAll(dom) : self.append(dom)
+    //   })
+    // },
+    // unwrap: function(){
+    //   this.parent().each(function(){
+    //     $(this).replaceWith($(this).children())
+    //   })
+    //   return this
+    // },
     clone: function(){
       return this.map(function(){ return this.cloneNode(true) })
     },
@@ -838,8 +838,8 @@ var Zepto = (function() {
     }
   }
 
-  // for now
-  $.fn.detach = $.fn.remove
+  // // for now
+  // $.fn.detach = $.fn.remove
 
   // Generate the `width` and `height` functions
   ;['width', 'height'].forEach(function(dimension){
